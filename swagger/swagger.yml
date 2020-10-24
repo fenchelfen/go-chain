@@ -15,7 +15,7 @@ tags:
   - name: peers
 
 
-host: localhost
+host: localhost:3000
 basePath: /v1
 schemes:
   - http
@@ -25,7 +25,6 @@ paths:
     post:
       tags:
         - peers
-
       summary: Commit new transaction
       operationId: addTransaction
       produces:
@@ -62,6 +61,7 @@ paths:
     get:
       tags:
         - peers
+      operationId: Mine
       summary: Mine transactions and announce to peers
       responses:
         200:
@@ -71,6 +71,7 @@ paths:
     post:
       tags:
         - peers
+      operationId: registerNode
       summary: Register with this node
       consumes:
         - application/json
@@ -92,6 +93,7 @@ paths:
     post:
       tags:
         - peers
+      operationId: registerWithNode
       summary: Register with a specific node
       consumes:
         - application/json
