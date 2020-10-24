@@ -1,0 +1,157 @@
+swagger: '2.0'
+info:
+  description: GoChain API
+  version: "1.0.0"
+  title: GoChain
+  
+  contact:
+    email: m.lyamets@innopolis.ru
+    name: "@fenchelfen"
+
+  license:
+    name: WTFPL
+
+# tags are used for organizing operations
+tags:
+- name: peers
+  description: P2P calls
+
+        
+host: virtserver.swaggerhub.com
+basePath: /fenchelfen/gochain/1.0.0
+schemes:
+ - https
+
+paths:
+  /new_transaction:
+    post:
+      tags:
+      - peers
+      
+      summary: Commit new transaction
+      operationId: addTransaction
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - in: body
+        name: Transaction
+        schema:
+          $ref: '#/definitions/Transaction'
+      responses:
+        201:
+          description: transaction commited
+        400:
+          description: invalid transaction
+  
+  /chain:
+    get:
+      tags:
+      - peers
+      summary: Retrieve the entire chain of blocks
+      operationId: getChain
+      produces:
+      - application/json
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: '#/definitions/Chain'
+          
+          
+  /mine:
+    get:
+      tags:
+        - peers
+      summary: Mine transactions and announce to peers
+      responses:
+        200:
+          description: success
+        
+  /register_node:
+    post:
+      tags:
+        - peers
+      summary: Register with this node
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+        - in: body
+          name: Peer
+          schema:
+            $ref: '#/definitions/Peer'
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: '#/definitions/Chain'
+            
+            
+  /register_with:
+    post:
+      tags:
+      - peers
+      summary: Register with a specific node
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+        - in: body
+          name: Peer
+          schema:
+            $ref: '#/definitions/Peer'
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: '#/definitions/Transaction'
+        400:
+          description: bad request
+          schema:
+            $ref: "#/definitions/Error"
+
+definitions:
+  Transaction:
+    type: object
+    required:
+    - author
+    - content
+    properties:
+      author:
+        type: string
+        format: uuid
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      content:
+        type: string
+  Chain:
+    required:
+    - length
+    - chain
+    - peers
+    properties:
+      length:
+        type: integer
+      chain:
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+      peers:
+        type: array
+        items:
+          $ref: '#/definitions/Peer'
+  Peer:
+    type: object
+    properties:
+      node_address:
+        type: string
+        format: url
+  Error:
+    type: object
+    properties:
+      message:
+        type: string
+        example: failure
