@@ -3,63 +3,61 @@ info:
   description: GoChain API
   version: "1.0.0"
   title: GoChain
-  
+
   contact:
     email: m.lyamets@innopolis.ru
-    name: "@fenchelfen"
 
   license:
     name: WTFPL
 
 # tags are used for organizing operations
 tags:
-- name: peers
-  description: P2P calls
+  - name: peers
 
-        
-host: virtserver.swaggerhub.com
-basePath: /fenchelfen/gochain/1.0.0
+
+host: localhost
+basePath: /v1
 schemes:
- - https
+  - http
 
 paths:
   /new_transaction:
     post:
       tags:
-      - peers
-      
+        - peers
+
       summary: Commit new transaction
       operationId: addTransaction
       produces:
-      - application/json
+        - application/json
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - in: body
-        name: Transaction
-        schema:
-          $ref: '#/definitions/Transaction'
+        - in: body
+          name: Transaction
+          schema:
+            $ref: '#/definitions/Transaction'
       responses:
         201:
           description: transaction commited
         400:
           description: invalid transaction
-  
+
   /chain:
     get:
       tags:
-      - peers
+        - peers
       summary: Retrieve the entire chain of blocks
       operationId: getChain
       produces:
-      - application/json
+        - application/json
       responses:
         200:
           description: success
           schema:
             $ref: '#/definitions/Chain'
-          
-          
+
+
   /mine:
     get:
       tags:
@@ -68,16 +66,16 @@ paths:
       responses:
         200:
           description: success
-        
+
   /register_node:
     post:
       tags:
         - peers
       summary: Register with this node
       consumes:
-      - application/json
+        - application/json
       produces:
-      - application/json
+        - application/json
       parameters:
         - in: body
           name: Peer
@@ -88,17 +86,17 @@ paths:
           description: success
           schema:
             $ref: '#/definitions/Chain'
-            
-            
+
+
   /register_with:
     post:
       tags:
-      - peers
+        - peers
       summary: Register with a specific node
       consumes:
-      - application/json
+        - application/json
       produces:
-      - application/json
+        - application/json
       parameters:
         - in: body
           name: Peer
@@ -118,8 +116,8 @@ definitions:
   Transaction:
     type: object
     required:
-    - author
-    - content
+      - author
+      - content
     properties:
       author:
         type: string
@@ -129,9 +127,9 @@ definitions:
         type: string
   Chain:
     required:
-    - length
-    - chain
-    - peers
+      - length
+      - chain
+      - peers
     properties:
       length:
         type: integer
