@@ -75,7 +75,6 @@ func configureAPI(api *operations.GoChainAPI) http.Handler {
 			}
 
 			return peers.NewGetChainOK().WithPayload(&body)
-			//return middleware.NotImplemented("Something in the way, she moves")
 		},
 	)
 
