@@ -45,6 +45,9 @@ func NewGoChainAPI(spec *loads.Document) *GoChainAPI {
 		MineHandler: MineHandlerFunc(func(params MineParams) middleware.Responder {
 			return middleware.NotImplemented("operation Mine has not yet been implemented")
 		}),
+		AddBlockHandler: AddBlockHandlerFunc(func(params AddBlockParams) middleware.Responder {
+			return middleware.NotImplemented("operation AddBlock has not yet been implemented")
+		}),
 		AddTransactionHandler: AddTransactionHandlerFunc(func(params AddTransactionParams) middleware.Responder {
 			return middleware.NotImplemented("operation AddTransaction has not yet been implemented")
 		}),
@@ -93,6 +96,8 @@ type GoChainAPI struct {
 
 	// MineHandler sets the operation handler for the mine operation
 	MineHandler MineHandler
+	// AddBlockHandler sets the operation handler for the add block operation
+	AddBlockHandler AddBlockHandler
 	// AddTransactionHandler sets the operation handler for the add transaction operation
 	AddTransactionHandler AddTransactionHandler
 	// GetChainHandler sets the operation handler for the get chain operation
@@ -179,6 +184,9 @@ func (o *GoChainAPI) Validate() error {
 
 	if o.MineHandler == nil {
 		unregistered = append(unregistered, "MineHandler")
+	}
+	if o.AddBlockHandler == nil {
+		unregistered = append(unregistered, "AddBlockHandler")
 	}
 	if o.AddTransactionHandler == nil {
 		unregistered = append(unregistered, "AddTransactionHandler")
@@ -284,6 +292,10 @@ func (o *GoChainAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/mine"] = NewMine(o.context, o.MineHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/add_block"] = NewAddBlock(o.context, o.AddBlockHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

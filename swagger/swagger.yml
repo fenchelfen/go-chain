@@ -55,6 +55,27 @@ paths:
         200:
           description: success
 
+  /add_block:
+    post:
+      operationId: addBlock
+      summary: Announce a block to this node
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Block
+          schema:
+            $ref: "#/definitions/Block"
+      responses:
+        200:
+          description: success
+        400:
+          description: bad request
+          schema:
+            $ref: "#/definitions/Error"
+
   /register_node:
     post:
       operationId: registerNode

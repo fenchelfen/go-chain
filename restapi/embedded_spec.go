@@ -36,6 +36,38 @@ func init() {
   "host": "localhost:3000",
   "basePath": "/v1",
   "paths": {
+    "/add_block": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Announce a block to this node",
+        "operationId": "addBlock",
+        "parameters": [
+          {
+            "name": "Block",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Block"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success"
+          },
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/chain": {
       "get": {
         "produces": [
@@ -266,6 +298,38 @@ func init() {
   "host": "localhost:3000",
   "basePath": "/v1",
   "paths": {
+    "/add_block": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "Announce a block to this node",
+        "operationId": "addBlock",
+        "parameters": [
+          {
+            "name": "Block",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Block"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success"
+          },
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/chain": {
       "get": {
         "produces": [
