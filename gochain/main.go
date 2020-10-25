@@ -1,17 +1,24 @@
 package gochain
 
-import "gochain/models"
+import (
+	"gochain/models"
+)
 
 type Blockchain struct {
-	index int64
+	index        int64
 	transactions []*models.Transaction
+	hashSum      string
 }
 
-func NewBlockchain() *Blockchain {
+func NewBlockchain(index int64, transactions []*models.Transaction) *Blockchain {
 
-	blockchain := new(Blockchain)
-	blockchain.index = index
-	blockchain.transactions = transactions
+	b := &Blockchain{index, transactions, ""}
+	b.computeHashSum()
 
-	return blockchain;
+	return b
+}
+
+func (b *Blockchain) computeHashSum() {
+
+	b.hashsum = ""
 }
