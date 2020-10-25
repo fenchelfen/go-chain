@@ -4,6 +4,9 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"gochain/models"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -20,6 +23,9 @@ type blockchain struct {
 	blocks []*block
 }
 
+var myPeers []*models.Peer
+var myBlockchain blockchain
+
 func CreateBlock(index int64, transactions []*models.Transaction, prevBlockHash string, proofOfWork string) *block {
 
 	return &block{index, transactions, prevBlockHash, 0, proofOfWork}
@@ -35,21 +41,6 @@ func CreateBlockchain() *blockchain {
 		genesisBlock,
 	}
 	return &blockchain{chain}
-}
-
-type proxyObjChain models.Chain
-
-func (c *proxyObjChain) MakeBlockchain() *blockchain {
-
-	blockchain := &blockchain{}
-
-	for _, cBlock := range c.Chain {
-
-		b := CreateBlock(*cBlock.Index, cBlock.Transactions, cBlock.PrevBlockHash, *cBlock.ProofOfWork)
-		blockchain.AddBlock(b)
-	}
-
-	return blockchain
 }
 
 func (b *block) ComputeHashSum() string {
@@ -112,9 +103,9 @@ func (c *blockchain) AddBlock(b *block) bool {
 	return true
 }
 
-func (c *blockchain) CheckChainValidity() bool {
+func (c *blockchain) IsChainValid() bool {
 
-	var prevHash = ""
+	var prevHash = c.blocks[0].prevBlockHash
 
 	for _, block := range c.blocks {
 
@@ -129,10 +120,72 @@ func (c *blockchain) CheckChainValidity() bool {
 		prevHash = block.ComputeHashSum()
 	}
 
-	return false
+	return true
+}
+
+// Retrieve chains of all peers, check for validity and reach consensus
+// by answering this question:
+//
+//			Whose chain is longer?
+//
+func (c *blockchain) ReachConsensus() *blockchain {
+
+	var peerChains []*blockchain
+	longestChain := c
+
+	for _, peer := range myPeers {
+
+		res, err := http.Get(peer.NodeAddress + "/chain")
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		body, err := ioutil.ReadAll(res.Body)
+		defer res.Body.Close()
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		peerChain := models.Chain{}
+		err = peerChain.UnmarshalBinary(body)
+
+		peerBlockchain := MakeBlockchain(&peerChain)
+		peerChains = append(peerChains, peerBlockchain)
+
+		if len(peerBlockchain.blocks) > len(longestChain.blocks) && peerBlockchain.IsChainValid() {
+
+			longestChain = peerBlockchain
+		}
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
+
+	return longestChain
 }
 
 func IsValidProof(proof *string) bool {
 
 	return strings.HasPrefix(*proof, "00")
+}
+
+func MakeBlockchain(c *models.Chain) *blockchain {
+
+	blockchain := &blockchain{}
+
+	for _, cBlock := range c.Chain {
+
+		b := CreateBlock(*cBlock.Index, cBlock.Transactions, cBlock.PrevBlockHash, *cBlock.ProofOfWork)
+		blockchain.AddBlock(b)
+	}
+
+	return blockchain
 }
