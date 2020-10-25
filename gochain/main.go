@@ -13,26 +13,43 @@ type block struct {
 	transactions  []*models.Transaction
 	prevBlockHash string
 	nonce         int64
+	proofOfWork   string
 }
 
 type blockchain struct {
 	blocks []*block
 }
 
-func CreateBlock(index int64, transactions []*models.Transaction, prevBlockHash string) *block {
+func CreateBlock(index int64, transactions []*models.Transaction, prevBlockHash string, proofOfWork string) *block {
 
-	return &block{index, transactions, prevBlockHash, 0}
+	return &block{index, transactions, prevBlockHash, 0, proofOfWork}
 }
 
-func CreateBlockChain() *blockchain {
+func CreateBlockchain() *blockchain {
 
-	genesisBlock := CreateBlock(0, nil, "")
+	genesisBlock := CreateBlock(0, nil, "", "")
 	genesisBlock.prevBlockHash = genesisBlock.ComputeHashSum()
+	genesisBlock.proofOfWork = genesisBlock.ProveWork()
 
 	chain := []*block{
 		genesisBlock,
 	}
 	return &blockchain{chain}
+}
+
+type proxyObjChain models.Chain
+
+func (c *proxyObjChain) MakeBlockchain() *blockchain {
+
+	blockchain := &blockchain{}
+
+	for _, cBlock := range c.Chain {
+
+		b := CreateBlock(*cBlock.Index, cBlock.Transactions, cBlock.PrevBlockHash, *cBlock.ProofOfWork)
+		blockchain.AddBlock(b)
+	}
+
+	return blockchain
 }
 
 func (b *block) ComputeHashSum() string {
@@ -50,7 +67,7 @@ func (b *block) ComputeHashSum() string {
 	return hash
 }
 
-func (b *block) GetDigest(nonce int) string {
+func (b *block) GetDigest(nonce int) *string {
 
 	var hash = ""
 
@@ -62,7 +79,17 @@ func (b *block) GetDigest(nonce int) string {
 		)
 	}
 
-	return hash
+	return &hash
+}
+
+func (b *block) ProveWork() string {
+
+	var nonce = 0
+
+	for ; !IsValidProof(b.GetDigest(nonce)); nonce++ {
+	}
+
+	return *b.GetDigest(nonce)
 }
 
 func (c *blockchain) LastBlock() *block {
@@ -70,32 +97,42 @@ func (c *blockchain) LastBlock() *block {
 	return c.blocks[len(c.blocks)-1]
 }
 
-func (c *blockchain) ProveWork(b *block) string {
-
-	var nonce = 0
-
-	for ; !c.IsValidProof(b.GetDigest(nonce)); nonce++ {
-	}
-
-	return b.GetDigest(nonce)
-}
-
-func (c *blockchain) IsValidProof(proof string) bool {
-
-	return strings.HasPrefix(proof, "00")
-}
-
-func (c *blockchain) AddBlock(b *block, proof string) bool {
+func (c *blockchain) AddBlock(b *block) bool {
 
 	if c.LastBlock().ComputeHashSum() != b.prevBlockHash {
 		return false
 	}
 
-	if !c.IsValidProof(proof) {
+	if !IsValidProof(&b.proofOfWork) {
 		return false
 	}
 
 	c.blocks = append(c.blocks, b)
 
 	return true
+}
+
+func (c *blockchain) CheckChainValidity() bool {
+
+	var prevHash = ""
+
+	for _, block := range c.blocks {
+
+		if prevHash != block.prevBlockHash {
+			return false
+		}
+
+		if IsValidProof(&block.proofOfWork) {
+			return false
+		}
+
+		prevHash = block.ComputeHashSum()
+	}
+
+	return false
+}
+
+func IsValidProof(proof *string) bool {
+
+	return strings.HasPrefix(*proof, "00")
 }
