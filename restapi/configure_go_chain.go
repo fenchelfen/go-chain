@@ -4,7 +4,9 @@ package restapi
 
 import (
 	"crypto/tls"
-	"gochain/models"
+	"fmt"
+	"github.com/google/uuid"
+	"gochain/gochain"
 	"net/http"
 
 	"github.com/go-openapi/errors"
@@ -13,6 +15,8 @@ import (
 
 	"gochain/restapi/operations"
 )
+
+var MyClient gochain.Client
 
 //go:generate swagger generate server --target ../../gochain --name GoChain --spec ../swagger/swagger.yml --principal interface{}
 
@@ -59,21 +63,17 @@ func configureAPI(api *operations.GoChainAPI) http.Handler {
 		})
 	}
 
+	api.RegisterWithNodeHandler = operations.RegisterWithNodeHandlerFunc(
+		func(params operations.RegisterWithNodeParams) middleware.Responder {
+
+			return operations.NewRegisterNodeOK().WithPayload(MyClient.Blockchain.MakeChain())
+		},
+	)
+
 	api.GetChainHandler = operations.GetChainHandlerFunc(
 		func(params operations.GetChainParams) middleware.Responder {
 
-			var length int64 = 4
-
-			var _peers = []*models.Peer{{}}
-			var chain = []*models.Block{{}}
-
-			body := models.Chain{
-				Chain:  chain,
-				Length: &length,
-				Peers:  _peers,
-			}
-
-			return operations.NewGetChainOK().WithPayload(&body)
+			return operations.NewGetChainOK().WithPayload(MyClient.Blockchain.MakeChain())
 		},
 	)
 
@@ -94,6 +94,11 @@ func configureTLS(tlsConfig *tls.Config) {
 // This function can be called multiple times, depending on the number of serving schemes.
 // scheme value will be set accordingly: "http", "https" or "unix"
 func configureServer(s *http.Server, scheme, addr string) {
+
+	fmt.Print("Configuring MyClient")
+	MyClient = gochain.Client{}
+	MyClient.Blockchain = gochain.CreateBlockchain()
+	MyClient.UUID, _ = uuid.NewRandom()
 }
 
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.

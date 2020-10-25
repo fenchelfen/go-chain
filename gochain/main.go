@@ -3,6 +3,8 @@ package gochain
 import (
 	"crypto/sha256"
 	"fmt"
+	"github.com/go-openapi/strfmt"
+	"github.com/google/uuid"
 	"gochain/models"
 	"io/ioutil"
 	"log"
@@ -23,8 +25,13 @@ type blockchain struct {
 	blocks []*block
 }
 
-var myPeers []*models.Peer
-var myBlockchain blockchain
+type Client struct {
+	UUID       uuid.UUID
+	Peers      []*models.Peer
+	Blockchain *blockchain
+}
+
+var MyClient Client
 
 func CreateBlock(index int64, transactions []*models.Transaction, prevBlockHash string, proofOfWork string) *block {
 
@@ -33,7 +40,16 @@ func CreateBlock(index int64, transactions []*models.Transaction, prevBlockHash 
 
 func CreateBlockchain() *blockchain {
 
-	genesisBlock := CreateBlock(0, nil, "", "")
+	_uuid := strfmt.UUID(MyClient.UUID.String())
+	content := "Empty"
+	transaction := models.Transaction{
+		Author:  &_uuid,
+		Content: &content,
+	}
+
+	transactions := []*models.Transaction{&transaction}
+
+	genesisBlock := CreateBlock(0, transactions, "", "")
 	genesisBlock.prevBlockHash = genesisBlock.ComputeHashSum()
 	genesisBlock.proofOfWork = genesisBlock.ProveWork()
 
@@ -133,7 +149,7 @@ func (c *blockchain) ReachConsensus() *blockchain {
 	var peerChains []*blockchain
 	longestChain := c
 
-	for _, peer := range myPeers {
+	for _, peer := range MyClient.Peers {
 
 		res, err := http.Get(peer.NodeAddress + "/chain")
 
@@ -162,11 +178,6 @@ func (c *blockchain) ReachConsensus() *blockchain {
 		if err != nil {
 			log.Fatalln(err)
 		}
-
-
-		if err != nil {
-			log.Fatalln(err)
-		}
 	}
 
 	return longestChain
@@ -188,4 +199,23 @@ func MakeBlockchain(c *models.Chain) *blockchain {
 	}
 
 	return blockchain
+}
+
+func (c *blockchain) MakeChain() *models.Chain {
+	chain := models.Chain{}
+	chain.Peers = MyClient.Peers
+
+	for _, block := range c.blocks {
+
+		cBlock := models.Block{
+			Index:         &block.index,
+			PrevBlockHash: block.prevBlockHash,
+			ProofOfWork:   &block.proofOfWork,
+			Transactions:  block.transactions,
+		}
+
+		chain.Chain = append(chain.Chain, &cBlock)
+	}
+
+	return &chain
 }
