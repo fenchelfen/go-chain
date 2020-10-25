@@ -25,7 +25,7 @@ type RegisterWithNodeOK struct {
 	/*
 	  In: Body
 	*/
-	Payload *models.Transaction `json:"body,omitempty"`
+	Payload *models.Chain `json:"body,omitempty"`
 }
 
 // NewRegisterWithNodeOK creates RegisterWithNodeOK with default headers values
@@ -35,13 +35,13 @@ func NewRegisterWithNodeOK() *RegisterWithNodeOK {
 }
 
 // WithPayload adds the payload to the register with node o k response
-func (o *RegisterWithNodeOK) WithPayload(payload *models.Transaction) *RegisterWithNodeOK {
+func (o *RegisterWithNodeOK) WithPayload(payload *models.Chain) *RegisterWithNodeOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the register with node o k response
-func (o *RegisterWithNodeOK) SetPayload(payload *models.Transaction) {
+func (o *RegisterWithNodeOK) SetPayload(payload *models.Chain) {
 	o.Payload = payload
 }
 

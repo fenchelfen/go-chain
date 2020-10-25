@@ -66,7 +66,7 @@ func configureAPI(api *operations.GoChainAPI) http.Handler {
 			var length int64 = 4
 
 			var _peers = []*models.Peer{{}}
-			var chain = []*models.Transaction{{}}
+			var chain = []*models.Block{{}}
 
 			body := models.Chain{
 				Chain:  chain,

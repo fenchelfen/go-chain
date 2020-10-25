@@ -56,7 +56,6 @@ paths:
           schema:
             $ref: '#/definitions/Chain'
 
-
   /mine:
     get:
       tags:
@@ -88,7 +87,6 @@ paths:
           schema:
             $ref: '#/definitions/Chain'
 
-
   /register_with:
     post:
       tags:
@@ -108,7 +106,7 @@ paths:
         200:
           description: success
           schema:
-            $ref: '#/definitions/Transaction'
+            $ref: '#/definitions/Chain'
         400:
           description: bad request
           schema:
@@ -127,6 +125,25 @@ definitions:
         example: d290f1ee-6c54-4b01-90e6-d701748f0851
       content:
         type: string
+  Block:
+    type: object
+    required:
+      - index
+      - transactions
+      - proofOfWork
+    properties:
+      index:
+        type: integer
+      transactions:
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+      proofOfWork:
+        type: string
+        description: sha256 digest
+      prevBlockHash:
+        type: string
+        description: sha256 + nonce digest
   Chain:
     required:
       - length
@@ -138,7 +155,7 @@ definitions:
       chain:
         type: array
         items:
-          $ref: '#/definitions/Transaction'
+          $ref: '#/definitions/Block'
       peers:
         type: array
         items:

@@ -160,7 +160,7 @@ func init() {
           "200": {
             "description": "success",
             "schema": {
-              "$ref": "#/definitions/Transaction"
+              "$ref": "#/definitions/Chain"
             }
           },
           "400": {
@@ -174,6 +174,33 @@ func init() {
     }
   },
   "definitions": {
+    "Block": {
+      "type": "object",
+      "required": [
+        "index",
+        "transactions",
+        "proofOfWork"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "prevBlockHash": {
+          "description": "sha256 + nonce digest",
+          "type": "string"
+        },
+        "proofOfWork": {
+          "description": "sha256 digest",
+          "type": "string"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        }
+      }
+    },
     "Chain": {
       "required": [
         "length",
@@ -184,7 +211,7 @@ func init() {
         "chain": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Transaction"
+            "$ref": "#/definitions/Block"
           }
         },
         "length": {
@@ -383,7 +410,7 @@ func init() {
           "200": {
             "description": "success",
             "schema": {
-              "$ref": "#/definitions/Transaction"
+              "$ref": "#/definitions/Chain"
             }
           },
           "400": {
@@ -397,6 +424,33 @@ func init() {
     }
   },
   "definitions": {
+    "Block": {
+      "type": "object",
+      "required": [
+        "index",
+        "transactions",
+        "proofOfWork"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "prevBlockHash": {
+          "description": "sha256 + nonce digest",
+          "type": "string"
+        },
+        "proofOfWork": {
+          "description": "sha256 digest",
+          "type": "string"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        }
+      }
+    },
     "Chain": {
       "required": [
         "length",
@@ -407,7 +461,7 @@ func init() {
         "chain": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Transaction"
+            "$ref": "#/definitions/Block"
           }
         },
         "length": {

@@ -27,8 +27,6 @@ func main() {
 	server := restapi.NewServer(api)
 	defer server.Shutdown()
 
-	api.PeersGetChainHandler = api.PeersGetChainHandler
-
 	parser := flags.NewParser(server, flags.Default)
 	parser.ShortDescription = "GoChain"
 	parser.LongDescription = "GoChain API"

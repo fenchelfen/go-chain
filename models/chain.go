@@ -21,7 +21,7 @@ type Chain struct {
 
 	// chain
 	// Required: true
-	Chain []*Transaction `json:"chain"`
+	Chain []*Block `json:"chain"`
 
 	// length
 	// Required: true
