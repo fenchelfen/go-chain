@@ -4,6 +4,7 @@ package restapi
 
 import (
 	"crypto/tls"
+	"gochain/models"
 	"net/http"
 
 	"github.com/go-openapi/errors"
@@ -58,6 +59,25 @@ func configureAPI(api *operations.GoChainAPI) http.Handler {
 			return middleware.NotImplemented("operation peers.RegisterWithNode has not yet been implemented")
 		})
 	}
+
+	api.PeersGetChainHandler = peers.GetChainHandlerFunc(
+		func(params peers.GetChainParams) middleware.Responder {
+
+			var length int64 = 4
+
+			var _peers = []*models.Peer{{}}
+			var chain = []*models.Transaction{{}}
+
+			body := models.Chain{
+				Chain:  chain,
+				Length: &length,
+				Peers:  _peers,
+			}
+
+			return peers.NewGetChainOK().WithPayload(&body)
+			//return middleware.NotImplemented("Something in the way, she moves")
+		},
+	)
 
 	api.PreServerShutdown = func() {}
 
