@@ -68,14 +68,14 @@ func configureAPI(api *operations.GoChainAPI) http.Handler {
 
 			MyClient.Peers = append(MyClient.Peers, params.Peer)
 
-			return operations.NewRegisterNodeOK().WithPayload(MyClient.Blockchain.MakeChain())
+			return operations.NewRegisterNodeOK().WithPayload(MyClient.Blockchain.MakeChain(MyClient.Peers))
 		},
 	)
 
 	api.GetChainHandler = operations.GetChainHandlerFunc(
 		func(params operations.GetChainParams) middleware.Responder {
 
-			return operations.NewGetChainOK().WithPayload(MyClient.Blockchain.MakeChain())
+			return operations.NewGetChainOK().WithPayload(MyClient.Blockchain.MakeChain(MyClient.Peers))
 		},
 	)
 
@@ -97,10 +97,11 @@ func configureTLS(tlsConfig *tls.Config) {
 // scheme value will be set accordingly: "http", "https" or "unix"
 func configureServer(s *http.Server, scheme, addr string) {
 
-	fmt.Print("Configuring MyClient")
+	fmt.Println("Configuring MyClient")
 	MyClient = gochain.Client{}
-	MyClient.Blockchain = gochain.CreateBlockchain()
 	MyClient.UUID, _ = uuid.NewRandom()
+
+	MyClient.Blockchain = gochain.CreateBlockchain(MyClient.UUID)
 }
 
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.

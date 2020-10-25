@@ -31,16 +31,14 @@ type Client struct {
 	Blockchain *blockchain
 }
 
-var MyClient Client
-
 func CreateBlock(index int64, transactions []*models.Transaction, prevBlockHash string, proofOfWork string) *block {
 
 	return &block{index, transactions, prevBlockHash, 0, proofOfWork}
 }
 
-func CreateBlockchain() *blockchain {
+func CreateBlockchain(author uuid.UUID) *blockchain {
 
-	_uuid := strfmt.UUID(MyClient.UUID.String())
+	_uuid := strfmt.UUID(author.String())
 	content := "Empty"
 	transaction := models.Transaction{
 		Author:  &_uuid,
@@ -144,12 +142,12 @@ func (c *blockchain) IsChainValid() bool {
 //
 //			Whose chain is longer?
 //
-func (c *blockchain) ReachConsensus() *blockchain {
+func (c *blockchain) ReachConsensus(peers []*models.Peer) *blockchain {
 
 	var peerChains []*blockchain
 	longestChain := c
 
-	for _, peer := range MyClient.Peers {
+	for _, peer := range peers {
 
 		res, err := http.Get(*peer.NodeAddress + "/chain")
 
@@ -201,9 +199,12 @@ func MakeBlockchain(c *models.Chain) *blockchain {
 	return blockchain
 }
 
-func (c *blockchain) MakeChain() *models.Chain {
+func (c *blockchain) MakeChain(peers []*models.Peer) *models.Chain {
 	chain := models.Chain{}
-	chain.Peers = MyClient.Peers
+	chain.Peers = peers
+
+	_length := int64(len(c.blocks))
+	chain.Length = &_length
 
 	for _, block := range c.blocks {
 
