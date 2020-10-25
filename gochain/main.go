@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"gochain/models"
+	"strconv"
 	"strings"
 )
 
@@ -36,10 +37,20 @@ func CreateBlockChain() *blockchain {
 
 func (b *block) ComputeHashSum() string {
 
-	return ""
+	var hash = ""
+
+	for i := 0; i < len(b.transactions); i++ {
+
+		hash = fmt.Sprintf(
+			"%x",
+			sha256.Sum256([]byte(hash+*b.transactions[i].Content)),
+		)
+	}
+
+	return hash
 }
 
-func (b *block) getDigest(nonce int) string {
+func (b *block) GetDigest(nonce int) string {
 
 	var hash = ""
 
@@ -47,7 +58,7 @@ func (b *block) getDigest(nonce int) string {
 
 		hash = fmt.Sprintf(
 			"%x",
-			sha256.Sum256([]byte(hash)),
+			sha256.Sum256([]byte(hash+*b.transactions[i].Content+strconv.Itoa(nonce))),
 		)
 	}
 
@@ -63,10 +74,28 @@ func (c *blockchain) ProveWork(b *block) string {
 
 	var nonce = 0
 
-	for strings.HasPrefix(b.getDigest(nonce), "00") {
-
-		nonce++
+	for ; !c.IsValidProof(b.GetDigest(nonce)); nonce++ {
 	}
 
-	return ""
+	return b.GetDigest(nonce)
+}
+
+func (c *blockchain) IsValidProof(proof string) bool {
+
+	return strings.HasPrefix(proof, "00")
+}
+
+func (c *blockchain) AddBlock(b *block, proof string) bool {
+
+	if c.LastBlock().ComputeHashSum() != b.prevBlockHash {
+		return false
+	}
+
+	if !c.IsValidProof(proof) {
+		return false
+	}
+
+	c.blocks = append(c.blocks, b)
+
+	return true
 }
