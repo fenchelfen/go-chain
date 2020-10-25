@@ -42,11 +42,6 @@ func configureAPI(api *operations.GoChainAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.MineHandler == nil {
-		api.MineHandler = operations.MineHandlerFunc(func(params operations.MineParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.Mine has not yet been implemented")
-		})
-	}
 	if api.AddTransactionHandler == nil {
 		api.AddTransactionHandler = operations.AddTransactionHandlerFunc(func(params operations.AddTransactionParams) middleware.Responder {
 			return middleware.NotImplemented("operation operations.AddTransaction has not yet been implemented")
@@ -57,11 +52,15 @@ func configureAPI(api *operations.GoChainAPI) http.Handler {
 			return middleware.NotImplemented("operation operations.RegisterNode has not yet been implemented")
 		})
 	}
-	if api.RegisterWithNodeHandler == nil {
-		api.RegisterWithNodeHandler = operations.RegisterWithNodeHandlerFunc(func(params operations.RegisterWithNodeParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RegisterWithNode has not yet been implemented")
-		})
-	}
+
+	api.MineHandler = operations.MineHandlerFunc(
+		func(params operations.MineParams) middleware.Responder {
+
+			// Mine not confirmed transactions and announce them to the peers
+
+			return operations.NewMineOK()
+		},
+	)
 
 	api.RegisterWithNodeHandler = operations.RegisterWithNodeHandlerFunc(
 		func(params operations.RegisterWithNodeParams) middleware.Responder {
