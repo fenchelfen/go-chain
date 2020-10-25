@@ -10,11 +10,6 @@ info:
   license:
     name: WTFPL
 
-# tags are used for organizing operations
-tags:
-  - name: peers
-
-
 host: localhost:3000
 basePath: /v1
 schemes:
@@ -23,8 +18,6 @@ schemes:
 paths:
   /new_transaction:
     post:
-      tags:
-        - peers
       summary: Commit new transaction
       operationId: addTransaction
       produces:
@@ -44,8 +37,6 @@ paths:
 
   /chain:
     get:
-      tags:
-        - peers
       summary: Retrieve the entire chain of blocks
       operationId: getChain
       produces:
@@ -58,8 +49,6 @@ paths:
 
   /mine:
     get:
-      tags:
-        - peers
       operationId: Mine
       summary: Mine transactions and announce to peers
       responses:
@@ -68,8 +57,6 @@ paths:
 
   /register_node:
     post:
-      tags:
-        - peers
       operationId: registerNode
       summary: Register with this node
       consumes:
@@ -89,8 +76,6 @@ paths:
 
   /register_with:
     post:
-      tags:
-        - peers
       operationId: registerWithNode
       summary: Register with a specific node
       consumes:

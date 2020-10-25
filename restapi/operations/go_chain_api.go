@@ -18,8 +18,6 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
-
-	"gochain/restapi/operations/peers"
 )
 
 // NewGoChainAPI creates a new GoChain instance
@@ -44,20 +42,20 @@ func NewGoChainAPI(spec *loads.Document) *GoChainAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
-		PeersMineHandler: peers.MineHandlerFunc(func(params peers.MineParams) middleware.Responder {
-			return middleware.NotImplemented("operation peers.Mine has not yet been implemented")
+		MineHandler: MineHandlerFunc(func(params MineParams) middleware.Responder {
+			return middleware.NotImplemented("operation Mine has not yet been implemented")
 		}),
-		PeersAddTransactionHandler: peers.AddTransactionHandlerFunc(func(params peers.AddTransactionParams) middleware.Responder {
-			return middleware.NotImplemented("operation peers.AddTransaction has not yet been implemented")
+		AddTransactionHandler: AddTransactionHandlerFunc(func(params AddTransactionParams) middleware.Responder {
+			return middleware.NotImplemented("operation AddTransaction has not yet been implemented")
 		}),
-		PeersGetChainHandler: peers.GetChainHandlerFunc(func(params peers.GetChainParams) middleware.Responder {
-			return middleware.NotImplemented("operation peers.GetChain has not yet been implemented")
+		GetChainHandler: GetChainHandlerFunc(func(params GetChainParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetChain has not yet been implemented")
 		}),
-		PeersRegisterNodeHandler: peers.RegisterNodeHandlerFunc(func(params peers.RegisterNodeParams) middleware.Responder {
-			return middleware.NotImplemented("operation peers.RegisterNode has not yet been implemented")
+		RegisterNodeHandler: RegisterNodeHandlerFunc(func(params RegisterNodeParams) middleware.Responder {
+			return middleware.NotImplemented("operation RegisterNode has not yet been implemented")
 		}),
-		PeersRegisterWithNodeHandler: peers.RegisterWithNodeHandlerFunc(func(params peers.RegisterWithNodeParams) middleware.Responder {
-			return middleware.NotImplemented("operation peers.RegisterWithNode has not yet been implemented")
+		RegisterWithNodeHandler: RegisterWithNodeHandlerFunc(func(params RegisterWithNodeParams) middleware.Responder {
+			return middleware.NotImplemented("operation RegisterWithNode has not yet been implemented")
 		}),
 	}
 }
@@ -93,16 +91,16 @@ type GoChainAPI struct {
 	//   - application/json
 	JSONProducer runtime.Producer
 
-	// PeersMineHandler sets the operation handler for the mine operation
-	PeersMineHandler peers.MineHandler
-	// PeersAddTransactionHandler sets the operation handler for the add transaction operation
-	PeersAddTransactionHandler peers.AddTransactionHandler
-	// PeersGetChainHandler sets the operation handler for the get chain operation
-	PeersGetChainHandler peers.GetChainHandler
-	// PeersRegisterNodeHandler sets the operation handler for the register node operation
-	PeersRegisterNodeHandler peers.RegisterNodeHandler
-	// PeersRegisterWithNodeHandler sets the operation handler for the register with node operation
-	PeersRegisterWithNodeHandler peers.RegisterWithNodeHandler
+	// MineHandler sets the operation handler for the mine operation
+	MineHandler MineHandler
+	// AddTransactionHandler sets the operation handler for the add transaction operation
+	AddTransactionHandler AddTransactionHandler
+	// GetChainHandler sets the operation handler for the get chain operation
+	GetChainHandler GetChainHandler
+	// RegisterNodeHandler sets the operation handler for the register node operation
+	RegisterNodeHandler RegisterNodeHandler
+	// RegisterWithNodeHandler sets the operation handler for the register with node operation
+	RegisterWithNodeHandler RegisterWithNodeHandler
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
 	ServeError func(http.ResponseWriter, *http.Request, error)
@@ -179,20 +177,20 @@ func (o *GoChainAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
-	if o.PeersMineHandler == nil {
-		unregistered = append(unregistered, "peers.MineHandler")
+	if o.MineHandler == nil {
+		unregistered = append(unregistered, "MineHandler")
 	}
-	if o.PeersAddTransactionHandler == nil {
-		unregistered = append(unregistered, "peers.AddTransactionHandler")
+	if o.AddTransactionHandler == nil {
+		unregistered = append(unregistered, "AddTransactionHandler")
 	}
-	if o.PeersGetChainHandler == nil {
-		unregistered = append(unregistered, "peers.GetChainHandler")
+	if o.GetChainHandler == nil {
+		unregistered = append(unregistered, "GetChainHandler")
 	}
-	if o.PeersRegisterNodeHandler == nil {
-		unregistered = append(unregistered, "peers.RegisterNodeHandler")
+	if o.RegisterNodeHandler == nil {
+		unregistered = append(unregistered, "RegisterNodeHandler")
 	}
-	if o.PeersRegisterWithNodeHandler == nil {
-		unregistered = append(unregistered, "peers.RegisterWithNodeHandler")
+	if o.RegisterWithNodeHandler == nil {
+		unregistered = append(unregistered, "RegisterWithNodeHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -285,23 +283,23 @@ func (o *GoChainAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/mine"] = peers.NewMine(o.context, o.PeersMineHandler)
+	o.handlers["GET"]["/mine"] = NewMine(o.context, o.MineHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/new_transaction"] = peers.NewAddTransaction(o.context, o.PeersAddTransactionHandler)
+	o.handlers["POST"]["/new_transaction"] = NewAddTransaction(o.context, o.AddTransactionHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/chain"] = peers.NewGetChain(o.context, o.PeersGetChainHandler)
+	o.handlers["GET"]["/chain"] = NewGetChain(o.context, o.GetChainHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/register_node"] = peers.NewRegisterNode(o.context, o.PeersRegisterNodeHandler)
+	o.handlers["POST"]["/register_node"] = NewRegisterNode(o.context, o.RegisterNodeHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/register_with"] = peers.NewRegisterWithNode(o.context, o.PeersRegisterWithNodeHandler)
+	o.handlers["POST"]["/register_with"] = NewRegisterWithNode(o.context, o.RegisterWithNodeHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

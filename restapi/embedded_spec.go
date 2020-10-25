@@ -41,9 +41,6 @@ func init() {
         "produces": [
           "application/json"
         ],
-        "tags": [
-          "peers"
-        ],
         "summary": "Retrieve the entire chain of blocks",
         "operationId": "getChain",
         "responses": {
@@ -58,9 +55,6 @@ func init() {
     },
     "/mine": {
       "get": {
-        "tags": [
-          "peers"
-        ],
         "summary": "Mine transactions and announce to peers",
         "operationId": "Mine",
         "responses": {
@@ -77,9 +71,6 @@ func init() {
         ],
         "produces": [
           "application/json"
-        ],
-        "tags": [
-          "peers"
         ],
         "summary": "Commit new transaction",
         "operationId": "addTransaction",
@@ -110,9 +101,6 @@ func init() {
         "produces": [
           "application/json"
         ],
-        "tags": [
-          "peers"
-        ],
         "summary": "Register with this node",
         "operationId": "registerNode",
         "parameters": [
@@ -141,9 +129,6 @@ func init() {
         ],
         "produces": [
           "application/json"
-        ],
-        "tags": [
-          "peers"
         ],
         "summary": "Register with a specific node",
         "operationId": "registerWithNode",
@@ -260,12 +245,7 @@ func init() {
         }
       }
     }
-  },
-  "tags": [
-    {
-      "name": "peers"
-    }
-  ]
+  }
 }`))
 	FlatSwaggerJSON = json.RawMessage([]byte(`{
   "schemes": [
@@ -291,9 +271,6 @@ func init() {
         "produces": [
           "application/json"
         ],
-        "tags": [
-          "peers"
-        ],
         "summary": "Retrieve the entire chain of blocks",
         "operationId": "getChain",
         "responses": {
@@ -308,9 +285,6 @@ func init() {
     },
     "/mine": {
       "get": {
-        "tags": [
-          "peers"
-        ],
         "summary": "Mine transactions and announce to peers",
         "operationId": "Mine",
         "responses": {
@@ -327,9 +301,6 @@ func init() {
         ],
         "produces": [
           "application/json"
-        ],
-        "tags": [
-          "peers"
         ],
         "summary": "Commit new transaction",
         "operationId": "addTransaction",
@@ -360,9 +331,6 @@ func init() {
         "produces": [
           "application/json"
         ],
-        "tags": [
-          "peers"
-        ],
         "summary": "Register with this node",
         "operationId": "registerNode",
         "parameters": [
@@ -391,9 +359,6 @@ func init() {
         ],
         "produces": [
           "application/json"
-        ],
-        "tags": [
-          "peers"
         ],
         "summary": "Register with a specific node",
         "operationId": "registerWithNode",
@@ -510,11 +475,6 @@ func init() {
         }
       }
     }
-  },
-  "tags": [
-    {
-      "name": "peers"
-    }
-  ]
+  }
 }`))
 }

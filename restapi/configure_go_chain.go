@@ -12,7 +12,6 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 
 	"gochain/restapi/operations"
-	"gochain/restapi/operations/peers"
 )
 
 //go:generate swagger generate server --target ../../gochain --name GoChain --spec ../swagger/swagger.yml --principal interface{}
@@ -39,29 +38,29 @@ func configureAPI(api *operations.GoChainAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.PeersMineHandler == nil {
-		api.PeersMineHandler = peers.MineHandlerFunc(func(params peers.MineParams) middleware.Responder {
-			return middleware.NotImplemented("operation peers.Mine has not yet been implemented")
+	if api.MineHandler == nil {
+		api.MineHandler = operations.MineHandlerFunc(func(params operations.MineParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.Mine has not yet been implemented")
 		})
 	}
-	if api.PeersAddTransactionHandler == nil {
-		api.PeersAddTransactionHandler = peers.AddTransactionHandlerFunc(func(params peers.AddTransactionParams) middleware.Responder {
-			return middleware.NotImplemented("operation peers.AddTransaction has not yet been implemented")
+	if api.AddTransactionHandler == nil {
+		api.AddTransactionHandler = operations.AddTransactionHandlerFunc(func(params operations.AddTransactionParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.AddTransaction has not yet been implemented")
 		})
 	}
-	if api.PeersRegisterNodeHandler == nil {
-		api.PeersRegisterNodeHandler = peers.RegisterNodeHandlerFunc(func(params peers.RegisterNodeParams) middleware.Responder {
-			return middleware.NotImplemented("operation peers.RegisterNode has not yet been implemented")
+	if api.RegisterNodeHandler == nil {
+		api.RegisterNodeHandler = operations.RegisterNodeHandlerFunc(func(params operations.RegisterNodeParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.RegisterNode has not yet been implemented")
 		})
 	}
-	if api.PeersRegisterWithNodeHandler == nil {
-		api.PeersRegisterWithNodeHandler = peers.RegisterWithNodeHandlerFunc(func(params peers.RegisterWithNodeParams) middleware.Responder {
-			return middleware.NotImplemented("operation peers.RegisterWithNode has not yet been implemented")
+	if api.RegisterWithNodeHandler == nil {
+		api.RegisterWithNodeHandler = operations.RegisterWithNodeHandlerFunc(func(params operations.RegisterWithNodeParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.RegisterWithNode has not yet been implemented")
 		})
 	}
 
-	api.PeersGetChainHandler = peers.GetChainHandlerFunc(
-		func(params peers.GetChainParams) middleware.Responder {
+	api.GetChainHandler = operations.GetChainHandlerFunc(
+		func(params operations.GetChainParams) middleware.Responder {
 
 			var length int64 = 4
 
@@ -74,7 +73,7 @@ func configureAPI(api *operations.GoChainAPI) http.Handler {
 				Peers:  _peers,
 			}
 
-			return peers.NewGetChainOK().WithPayload(&body)
+			return operations.NewGetChainOK().WithPayload(&body)
 		},
 	)
 
