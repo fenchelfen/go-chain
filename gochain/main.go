@@ -151,7 +151,7 @@ func (c *blockchain) ReachConsensus() *blockchain {
 
 	for _, peer := range MyClient.Peers {
 
-		res, err := http.Get(peer.NodeAddress + "/chain")
+		res, err := http.Get(*peer.NodeAddress + "/chain")
 
 		if err != nil {
 			log.Fatalln(err)

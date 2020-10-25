@@ -168,6 +168,8 @@ definitions:
           $ref: '#/definitions/Peer'
   Peer:
     type: object
+    required:
+      - node_address
     properties:
       node_address:
         type: string

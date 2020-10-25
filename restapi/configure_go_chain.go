@@ -66,6 +66,8 @@ func configureAPI(api *operations.GoChainAPI) http.Handler {
 	api.RegisterWithNodeHandler = operations.RegisterWithNodeHandlerFunc(
 		func(params operations.RegisterWithNodeParams) middleware.Responder {
 
+			MyClient.Peers = append(MyClient.Peers, params.Peer)
+
 			return operations.NewRegisterNodeOK().WithPayload(MyClient.Blockchain.MakeChain())
 		},
 	)

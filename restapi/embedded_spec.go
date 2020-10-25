@@ -253,6 +253,9 @@ func init() {
     },
     "Peer": {
       "type": "object",
+      "required": [
+        "node_address"
+      ],
       "properties": {
         "node_address": {
           "type": "string",
@@ -515,6 +518,9 @@ func init() {
     },
     "Peer": {
       "type": "object",
+      "required": [
+        "node_address"
+      ],
       "properties": {
         "node_address": {
           "type": "string",
